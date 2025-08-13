@@ -247,7 +247,7 @@ export function SpaceGrid() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-12">
+      <div className="px-6 py-12">
         <CategoryFilter
           categories={categories}
           selectedCategory={selectedCategory}
@@ -259,7 +259,7 @@ export function SpaceGrid() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 space-y-12">
+    <div className="px-6 py-12 space-y-12">
       <CategoryFilter
         categories={categories}
         selectedCategory={selectedCategory}

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import * as THREE from "three"
 import { Loader2 } from "lucide-react"
 
 interface ScenePreviewProps {
@@ -18,14 +17,27 @@ export function ScenePreview({
   interactive = false,
 }: ScenePreviewProps) {
   const mountRef = useRef<HTMLDivElement>(null)
-  const sceneRef = useRef<THREE.Scene | null>(null)
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
-  const animationRef = useRef<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [hasWebGL, setHasWebGL] = useState(true)
+  const [THREE, setTHREE] = useState<any>(null)
 
   useEffect(() => {
-    if (!mountRef.current) return
+    const loadThreeJS = async () => {
+      try {
+        const threeModule = await import("three")
+        setTHREE(threeModule)
+      } catch (error) {
+        console.error("Failed to load Three.js:", error)
+        setHasWebGL(false)
+        setIsLoading(false)
+      }
+    }
+
+    loadThreeJS()
+  }, [])
+
+  useEffect(() => {
+    if (!THREE || !mountRef.current) return
 
     // Check WebGL support
     try {
@@ -48,9 +60,6 @@ export function ScenePreview({
 
     // Scene setup
     const scene = new THREE.Scene()
-    sceneRef.current = scene
-
-    // Camera setup
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000)
     camera.position.set(0, 2, 5)
 
@@ -66,12 +75,11 @@ export function ScenePreview({
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1
-    rendererRef.current = renderer
 
     mount.appendChild(renderer.domElement)
 
     // Create scene based on space type
-    createSceneForType(scene, spaceType)
+    createSceneForType(scene, spaceType, THREE)
 
     // Lighting
     const ambientLight = new THREE.AmbientLight(0x404040, 0.6)
@@ -85,8 +93,9 @@ export function ScenePreview({
     scene.add(directionalLight)
 
     // Animation loop
+    let animationId: number
     const animate = () => {
-      animationRef.current = requestAnimationFrame(animate)
+      animationId = requestAnimationFrame(animate)
 
       if (autoRotate) {
         scene.rotation.y += 0.005
@@ -107,63 +116,61 @@ export function ScenePreview({
     }
 
     window.addEventListener("resize", handleResize)
-
-    // Start animation
     animate()
     setIsLoading(false)
 
     // Cleanup
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
+      if (animationId) {
+        cancelAnimationFrame(animationId)
       }
       window.removeEventListener("resize", handleResize)
 
-      if (mount && renderer.domElement) {
+      if (mount && renderer.domElement && mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement)
       }
 
       renderer.dispose()
 
       // Dispose of all geometries and materials
-      scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
+      scene.traverse((object: any) => {
+        if (object.isMesh) {
           object.geometry.dispose()
           if (Array.isArray(object.material)) {
-            object.material.forEach((material) => material.dispose())
+            object.material.forEach((material: any) => material.dispose())
           } else {
             object.material.dispose()
           }
         }
       })
     }
-  }, [spaceType, autoRotate])
+  }, [THREE, spaceType, autoRotate])
 
-  const createSceneForType = (scene: THREE.Scene, type: string) => {
+  const createSceneForType = (scene: any, type: string, THREE: any) => {
     scene.clear()
 
     switch (type) {
       case "gaming":
-        createGamingScene(scene)
+        createGamingScene(scene, THREE)
         break
       case "art":
-        createArtScene(scene)
+        createArtScene(scene, THREE)
         break
       case "social":
-        createSocialScene(scene)
+        createSocialScene(scene, THREE)
         break
       case "educational":
-        createEducationalScene(scene)
+        createEducationalScene(scene, THREE)
         break
       case "business":
-        createBusinessScene(scene)
+        createBusinessScene(scene, THREE)
         break
       default:
-        createDefaultScene(scene)
+        createDefaultScene(scene, THREE)
     }
   }
 
-  const createGamingScene = (scene: THREE.Scene) => {
+  const createGamingScene = (scene: any, THREE: any) => {
     // Neon gaming environment
     const geometry = new THREE.BoxGeometry(1, 1, 1)
     const material = new THREE.MeshPhongMaterial({
@@ -200,7 +207,7 @@ export function ScenePreview({
     scene.add(particles)
   }
 
-  const createArtScene = (scene: THREE.Scene) => {
+  const createArtScene = (scene: any, THREE: any) => {
     // Art gallery with floating sculptures
     const geometry = new THREE.SphereGeometry(0.5, 32, 32)
     const materials = [
@@ -224,7 +231,7 @@ export function ScenePreview({
     scene.add(pedestal)
   }
 
-  const createSocialScene = (scene: THREE.Scene) => {
+  const createSocialScene = (scene: any, THREE: any) => {
     // Social space with seating arrangement
     const chairGeometry = new THREE.BoxGeometry(0.5, 1, 0.5)
     const chairMaterial = new THREE.MeshPhongMaterial({ color: 0x8b4513 })
@@ -245,7 +252,7 @@ export function ScenePreview({
     scene.add(table)
   }
 
-  const createEducationalScene = (scene: THREE.Scene) => {
+  const createEducationalScene = (scene: any, THREE: any) => {
     // Classroom with floating books and elements
     const bookGeometry = new THREE.BoxGeometry(0.3, 0.4, 0.05)
     const bookMaterials = [
@@ -270,7 +277,7 @@ export function ScenePreview({
     scene.add(board)
   }
 
-  const createBusinessScene = (scene: THREE.Scene) => {
+  const createBusinessScene = (scene: any, THREE: any) => {
     // Modern office environment
     const deskGeometry = new THREE.BoxGeometry(2, 0.1, 1)
     const deskMaterial = new THREE.MeshPhongMaterial({ color: 0x34495e })
@@ -304,7 +311,7 @@ export function ScenePreview({
     }
   }
 
-  const createDefaultScene = (scene: THREE.Scene) => {
+  const createDefaultScene = (scene: any, THREE: any) => {
     // Generic abstract scene
     const geometry = new THREE.IcosahedronGeometry(1, 1)
     const material = new THREE.MeshPhongMaterial({
