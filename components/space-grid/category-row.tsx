@@ -35,7 +35,7 @@ export function CategoryRow({ title, spaces, priority = false }: CategoryRowProp
     const container = document.getElementById(`row-${title.replace(/\s+/g, "-").toLowerCase()}`)
     if (!container) return
 
-    const scrollAmount = 320 // Width of card + gap
+    const scrollAmount = window.innerWidth < 768 ? 160 : 320
     const newPosition = direction === "left" ? scrollPosition - scrollAmount : scrollPosition + scrollAmount
 
     container.scrollTo({
@@ -78,14 +78,14 @@ export function CategoryRow({ title, spaces, priority = false }: CategoryRowProp
 
       <div
         id={`row-${title.replace(/\s+/g, "-").toLowerCase()}`}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 md:pb-0"
+        className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-4 md:pb-0 px-1"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
       >
         {spaces.map((space, index) => (
-          <div key={space.id} className="flex-shrink-0 w-48 md:w-72">
+          <div key={space.id} className="flex-shrink-0 w-[calc(50vw-24px)] sm:w-44 md:w-72">
             <SpaceCard space={space} priority={priority && index < 3} />
           </div>
         ))}
