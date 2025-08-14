@@ -23,7 +23,7 @@ export function Header() {
           <div className="flex items-center gap-8">
             <Link href="/">
               <h1 className="text-xl font-bold text-white">
-                MyRoom<span className="text-primary">.Chat</span>
+                <span className="text-red-500">M</span>y<span className="text-red-500">R</span>oom.<span className="text-red-500">C</span>hat
               </h1>
             </Link>
             <nav className="flex items-center gap-6">
@@ -124,7 +124,7 @@ export function Header() {
         <div className="px-4 h-14 flex items-center justify-between">
           <Link href="/">
             <h1 className="text-lg font-bold text-white">
-              MyRoom<span className="text-primary">.Chat</span>
+              <span className="text-red-500">M</span>y<span className="text-red-500">R</span>oom.<span className="text-red-500">C</span>hat
             </h1>
           </Link>
 
