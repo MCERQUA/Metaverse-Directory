@@ -95,7 +95,7 @@ export function EnhancedCategoryRow({ title, spaces, priority = false }: Enhance
       >
         {spaces.map((space) => (
           <div key={space.id} className="flex-none w-80">
-            {space.isRealSpace && space.image360 && space.liveUrl ? (
+            {space.isRealSpace ? (
               <InteractiveSpaceCard
                 id={space.id}
                 name={space.name}
