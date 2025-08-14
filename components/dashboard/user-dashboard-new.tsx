@@ -22,7 +22,7 @@ import {
   Image as ImageIcon
 } from "lucide-react"
 import Link from "next/link"
-import { uploadImage } from "@/lib/supabase"
+import { uploadProfileImage, uploadBackgroundImage, getProfileImageUrl, getBackgroundImageUrl } from "@/lib/supabase"
 
 export function UserDashboard() {
   const { user } = useAuth()
@@ -37,6 +37,7 @@ export function UserDashboard() {
   const [headerImage, setHeaderImage] = useState("/placeholder.svg")
   const [displayName, setDisplayName] = useState(user?.username || "")
   const [bio, setBio] = useState("")
+  const [profileLoaded, setProfileLoaded] = useState(false)
   
   // File input refs
   const profileInputRef = useRef<HTMLInputElement>(null)
@@ -55,16 +56,43 @@ export function UserDashboard() {
     }
   ]
 
-  // Load saved profile data from localStorage
+  // Load saved profile data from localStorage and check Supabase for images
   useEffect(() => {
-    const savedProfile = localStorage.getItem(`profile_${user?.id}`)
+    if (!user?.id) return
+    
+    // Load profile data from localStorage
+    const savedProfile = localStorage.getItem(`profile_${user.id}`)
     if (savedProfile) {
       const data = JSON.parse(savedProfile)
-      setProfileImage(data.profileImage || "/placeholder.svg")
-      setHeaderImage(data.headerImage || "/placeholder.svg")
       setDisplayName(data.displayName || user?.username || "")
       setBio(data.bio || "")
     }
+    
+    // Try to load images from Supabase
+    const loadImages = async () => {
+      // Check for profile image in Supabase
+      const profileUrl = getProfileImageUrl(user.id, 'jpg')
+      const bgUrl = getBackgroundImageUrl(user.id, 'jpg')
+      
+      // Try to fetch the images to see if they exist
+      try {
+        const profileRes = await fetch(profileUrl, { method: 'HEAD' })
+        if (profileRes.ok) {
+          setProfileImage(profileUrl)
+        }
+      } catch {}
+      
+      try {
+        const bgRes = await fetch(bgUrl, { method: 'HEAD' })
+        if (bgRes.ok) {
+          setHeaderImage(bgUrl)
+        }
+      } catch {}
+      
+      setProfileLoaded(true)
+    }
+    
+    loadImages()
   }, [user])
 
   const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,22 +103,20 @@ export function UserDashboard() {
     setError("")
     
     try {
-      // For demo, we'll use local storage URL
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string)
+      // Upload to Supabase
+      const url = await uploadProfileImage(user.id, file)
+      
+      if (url) {
+        setProfileImage(url)
+        setMessage("Profile image updated successfully!")
+        setTimeout(() => setMessage(""), 3000)
+      } else {
+        throw new Error("Failed to upload image")
       }
-      reader.readAsDataURL(file)
-      
-      // In production, you would upload to Supabase:
-      // const { url, error } = await uploadImage('profiles', 'avatar', file, user.id)
-      // if (error) throw error
-      // setProfileImage(url!)
-      
-      setMessage("Profile image updated successfully!")
-      setTimeout(() => setMessage(""), 3000)
     } catch (err) {
+      console.error('Upload error:', err)
       setError("Failed to upload profile image")
+      setTimeout(() => setError(""), 3000)
     } finally {
       setIsUploading(false)
     }
@@ -104,22 +130,20 @@ export function UserDashboard() {
     setError("")
     
     try {
-      // For demo, we'll use local storage URL
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setHeaderImage(reader.result as string)
+      // Upload to Supabase
+      const url = await uploadBackgroundImage(user.id, file)
+      
+      if (url) {
+        setHeaderImage(url)
+        setMessage("Header image updated successfully!")
+        setTimeout(() => setMessage(""), 3000)
+      } else {
+        throw new Error("Failed to upload image")
       }
-      reader.readAsDataURL(file)
-      
-      // In production, you would upload to Supabase:
-      // const { url, error } = await uploadImage('profiles', 'header', file, user.id)
-      // if (error) throw error
-      // setHeaderImage(url!)
-      
-      setMessage("Header image updated successfully!")
-      setTimeout(() => setMessage(""), 3000)
     } catch (err) {
+      console.error('Upload error:', err)
       setError("Failed to upload header image")
+      setTimeout(() => setError(""), 3000)
     } finally {
       setIsUploading(false)
     }
@@ -130,10 +154,9 @@ export function UserDashboard() {
     
     setIsSaving(true)
     
-    // Save to localStorage for demo
+    // Save profile data to localStorage (displayName and bio)
+    // Images are already saved to Supabase when uploaded
     const profileData = {
-      profileImage,
-      headerImage,
       displayName,
       bio
     }
@@ -143,7 +166,7 @@ export function UserDashboard() {
       setIsSaving(false)
       setMessage("Profile saved successfully!")
       setTimeout(() => setMessage(""), 3000)
-    }, 1000)
+    }, 500)
   }
 
   return (

@@ -39,6 +39,19 @@ const featuredSpaces: FeaturedSpace[] = [
     liveUrl: "https://3d-mc.netlify.app/",
   },
   {
+    id: 1003,
+    name: "White Space",
+    creator: "MetaVerse Studios",
+    category: "Art",
+    description:
+      "Experience pure minimalism in this breathtaking 360° white void. A serene, contemplative space that challenges perception and creates infinite possibilities for imagination.",
+    userCount: 12450,
+    image: "/white-room.jpg",
+    tags: ["Live", "360°", "Minimalist"],
+    isRealSpace: true,
+    liveUrl: "https://3d-mc.netlify.app/white",
+  },
+  {
     id: 1,
     name: "Neon City Racing",
     creator: "CyberDev Studios",

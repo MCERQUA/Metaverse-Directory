@@ -34,6 +34,19 @@ const realSpaces = [
     featured: true,
     isRealSpace: true,
   },
+  {
+    id: 1003,
+    name: "White Space",
+    creator: "MetaVerse Studios",
+    category: "Art",
+    visitors: 12450,
+    rating: 4.9,
+    image: "/white-room.jpg",
+    image360: "/white-room.jpg",
+    liveUrl: "https://3d-mc.netlify.app/white",
+    featured: true,
+    isRealSpace: true,
+  },
 ]
 
 // Mock data for different categories
@@ -164,7 +177,8 @@ const mockSpaces = {
     },
   ],
   popular: [
-    realSpaces[0], // Just Mikes Room
+    realSpaces[0], // Mikes Room
+    realSpaces[2], // White Space
     {
       id: 13,
       name: "Dragon's Lair",
