@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
-import { UserDashboard } from "@/components/dashboard/user-dashboard"
+import { UserDashboard } from "@/components/dashboard/user-dashboard-new"
 import { ProtectedRoute } from "@/components/auth/protected-route"
 
 export const metadata: Metadata = {
-  title: "Dashboard - MetaVerse Discovery",
-  description: "Manage your virtual spaces and profile",
+  title: "Dashboard - MyRoom.Chat",
+  description: "Manage your profile and virtual spaces",
 }
 
 export default function DashboardPage() {
