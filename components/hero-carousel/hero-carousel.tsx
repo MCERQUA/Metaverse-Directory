@@ -142,7 +142,7 @@ export function HeroCarousel() {
               index === currentSlide ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
           >
-            {space.isRealSpace && space.image === "/room1-360.jpg" ? (
+            {space.isRealSpace && (space.image === "/room1-360.jpg" || space.image === "/white-room.jpg") ? (
               <PanoramaViewer
                 id={`hero-panorama-${space.id}`}
                 imageUrl={space.image}
