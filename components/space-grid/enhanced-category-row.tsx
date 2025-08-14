@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react"
 import { SpaceCard } from "./space-card"
-import { InteractiveSpaceCard } from "./interactive-space-card"
+import { InteractiveSpaceCardOptimized } from "./interactive-space-card-optimized"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -96,7 +96,7 @@ export function EnhancedCategoryRow({ title, spaces, priority = false }: Enhance
         {spaces.map((space) => (
           <div key={space.id} className="flex-none w-80">
             {space.isRealSpace ? (
-              <InteractiveSpaceCard
+              <InteractiveSpaceCardOptimized
                 id={space.id}
                 name={space.name}
                 creator={space.creator}
