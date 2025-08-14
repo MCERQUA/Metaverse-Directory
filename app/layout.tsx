@@ -7,8 +7,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "MetaVerse Discovery - Explore Virtual Worlds",
-  description: "Discover and explore amazing virtual spaces in the metaverse. Netflix-style browsing for 3D worlds.",
+  title: "MyRoom.Chat - Interactive 360° Virtual Rooms",
+  description: "Experience immersive 360° virtual rooms. Chat, explore, and connect in stunning interactive 3D spaces.",
   generator: "v0.app",
 }
 
