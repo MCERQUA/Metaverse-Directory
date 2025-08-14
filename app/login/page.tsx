@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import { LoginForm } from "@/components/auth/login-form"
 
 export const metadata: Metadata = {
-  title: "Login - MetaVerse Discovery",
-  description: "Sign in to your MetaVerse Discovery account",
+  title: "Login - MyRoom.Chat",
+  description: "Sign in to your MyRoom.Chat account",
 }
 
 export default function LoginPage() {
