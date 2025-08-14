@@ -18,9 +18,9 @@ interface InteractiveSpaceCardProps {
   category: string
   visitors: number
   rating: number
-  image360?: string
+  image360: string
   thumbnail: string
-  liveUrl?: string
+  liveUrl: string
   featured?: boolean
   isRealSpace?: boolean
 }
@@ -104,17 +104,15 @@ export function InteractiveSpaceCard({
           </div>
         </div>
 
-        {liveUrl && (
-          <Button
-            asChild
-            className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all"
-          >
-            <a href={liveUrl} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Enter Space
-            </a>
-          </Button>
-        )}
+        <Button
+          asChild
+          className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all"
+        >
+          <a href={liveUrl} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="mr-2 h-4 w-4" />
+            Enter Space
+          </a>
+        </Button>
       </div>
     </Card>
   )
