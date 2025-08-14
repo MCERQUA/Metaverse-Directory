@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, Users, ExternalLink, Move3D, X } from "lucide-react"
-import { Sphere360Viewer } from "@/components/three/sphere-360-viewer"
+import { Simple360Viewer } from "@/components/three/simple-360-viewer"
 
 interface InteractiveSpaceCardProps {
   id: number
@@ -45,7 +45,7 @@ export function InteractiveSpaceCard({
       {/* 360 Preview Overlay */}
       {isPreviewMode && (
         <div className="absolute inset-0 z-20 bg-black">
-          <Sphere360Viewer imageUrl={image360} className="absolute inset-0" />
+          <Simple360Viewer imageUrl={image360} className="absolute inset-0" />
           
           <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-30">
             <div className="bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
