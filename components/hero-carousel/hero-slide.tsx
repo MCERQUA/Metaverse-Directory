@@ -25,7 +25,7 @@ export function HeroSlide({ space, isActive }: HeroSlideProps) {
         isActive ? "opacity-100 scale-100" : "opacity-0 scale-105"
       }`}
     >
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${space.image})` }} />
+      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: space?.image ? `url(${space.image})` : 'none' }} />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 

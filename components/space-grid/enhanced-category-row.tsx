@@ -111,13 +111,7 @@ export function EnhancedCategoryRow({ title, spaces, priority = false }: Enhance
               />
             ) : (
               <SpaceCard
-                name={space.name}
-                creator={space.creator}
-                category={space.category}
-                visitors={space.visitors}
-                rating={space.rating}
-                image={space.image}
-                featured={space.featured}
+                space={space}
                 priority={priority}
               />
             )}
