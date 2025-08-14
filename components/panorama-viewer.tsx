@@ -40,10 +40,12 @@ export default function PanoramaViewer({
       }
     }
 
-    // Initialize Pannellum viewer
-    const pannellum = (window as any).pannellum;
-    if (pannellum) {
-      viewerRef.current = pannellum.viewer(id, {
+    // Small delay to ensure DOM is ready for multiple instances
+    const timer = setTimeout(() => {
+      // Initialize Pannellum viewer
+      const pannellum = (window as any).pannellum;
+      if (pannellum && containerRef.current) {
+        viewerRef.current = pannellum.viewer(id, {
         type: 'equirectangular',
         panorama: imageUrl,
         autoLoad: true,
@@ -63,9 +65,11 @@ export default function PanoramaViewer({
         compass: false,
         preview: imageUrl
       });
-    }
+      }
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       if (viewerRef.current) {
         try {
           viewerRef.current.destroy();
