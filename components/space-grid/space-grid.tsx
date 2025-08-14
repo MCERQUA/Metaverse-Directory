@@ -21,6 +21,19 @@ const realSpaces = [
     featured: true,
     isRealSpace: true,
   },
+  {
+    id: 1002,
+    name: "Pieter.com/3d",
+    creator: "@levelsio",
+    category: "Art",
+    visitors: 8976,
+    rating: 4.8,
+    image: "/pieter.jpg",
+    image360: null,
+    liveUrl: "https://pieter.com/3d",
+    featured: true,
+    isRealSpace: true,
+  },
 ]
 
 // Mock data for different categories
@@ -151,7 +164,7 @@ const mockSpaces = {
     },
   ],
   popular: [
-    ...realSpaces,
+    realSpaces[0], // Just Mikes Room
     {
       id: 13,
       name: "Dragon's Lair",
@@ -245,6 +258,9 @@ const mockSpaces = {
       featured: true,
     },
   ],
+  featuredCreators: [
+    realSpaces[1], // Pieter.com/3d
+  ],
 }
 
 const categories = ["All", "Gaming", "Social", "Educational", "Art", "Business"]
@@ -288,6 +304,7 @@ export function SpaceGrid() {
 
       {selectedCategory === "All" ? (
         <>
+          <EnhancedCategoryRow title="Featured Creators" spaces={mockSpaces.featuredCreators} priority />
           <EnhancedCategoryRow title="Trending Now" spaces={mockSpaces.trending} priority />
           <CategoryRow title="Staff Picks" spaces={mockSpaces.staffPicks} />
           <CategoryRow title="New Arrivals" spaces={mockSpaces.newArrivals} />
