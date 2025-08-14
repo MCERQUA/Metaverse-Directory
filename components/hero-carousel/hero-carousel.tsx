@@ -4,8 +4,21 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Play, Users } from "lucide-react"
 
+interface FeaturedSpace {
+  id: number
+  name: string
+  creator: string
+  category: string
+  description: string
+  userCount: number
+  image: string
+  tags: string[]
+  isRealSpace?: boolean
+  liveUrl?: string
+}
+
 // Mock data for featured spaces
-const featuredSpaces = [
+const featuredSpaces: FeaturedSpace[] = [
   {
     id: 1001,
     name: "Neon Lounge VR",
@@ -91,6 +104,11 @@ export function HeroCarousel() {
 
   const currentSpace = featuredSpaces[currentSlide]
 
+  // Safety check for SSR
+  if (!currentSpace) {
+    return null
+  }
+
   return (
     <section
       className="relative h-[50vh] md:h-[60vh] overflow-hidden"
@@ -104,7 +122,7 @@ export function HeroCarousel() {
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
               index === currentSlide ? "opacity-100" : "opacity-0"
             }`}
-            style={{ backgroundImage: `url(${space.image})` }}
+            style={{ backgroundImage: space?.image ? `url(${space.image})` : 'none' }}
           />
         ))}
       </div>
