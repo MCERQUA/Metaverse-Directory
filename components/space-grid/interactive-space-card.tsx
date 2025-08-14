@@ -49,16 +49,15 @@ export function InteractiveSpaceCard({
             imageUrl={image360}
             autoRotate={-2}
             showControls={false}
-            initialPitch={0}
+            initialPitch={10}
             initialYaw={180}
             height="100%"
             className="absolute inset-0"
           />
         ) : (
-          <img
-            src={thumbnail}
-            alt={name}
-            className="w-full h-full object-cover"
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: thumbnail ? `url(${thumbnail})` : 'none' }}
           />
         )}
         
