@@ -128,3 +128,126 @@ Using shadcn/ui components with Radix UI primitives:
 - Lucide React for icons
 - Components stored in `@/components/ui`
 - claude code is running on a virtual server you can test local deployments but the user cannot "view" them as their is no "Localhost" only use local deploy for debuging and not visual testing
+
+## 🌐 360° Panorama System (CRITICAL REFERENCE)
+
+### **MANDATORY DOCUMENTATION REVIEW**
+Before working with panoramas, hero carousels, or space cards, **ALWAYS REVIEW** these comprehensive guides:
+
+#### **Implementation Guides**
+- **`/docs/HERO-PANORAMA-IMPLEMENTATION-GUIDE.md`** - Complete guide for adding 360° panoramas to hero carousel
+- **`/docs/SPACE-CARD-PANORAMA-IMPLEMENTATION-GUIDE.md`** - Step-by-step guide for panorama space cards
+- **`/docs/PANORAMA-TROUBLESHOOTING-GUIDE.md`** - Debugging WebGL context issues, performance problems
+- **`/docs/PANORAMA-ASSET-REQUIREMENTS.md`** - Technical specifications, file formats, optimization
+
+#### **Research & Architecture**
+- **`/docs/COMPREHENSIVE-360-PANORAMA-RESEARCH-2024.md`** - 22,000+ word research on panorama implementation
+- **`/docs/360-PANORAMA-HERO-SYSTEM.md`** - System architecture and performance documentation
+
+### **Panorama Implementation Rules**
+
+#### **Adding New Hero Panoramas**
+**CRITICAL**: Always follow `/docs/HERO-PANORAMA-IMPLEMENTATION-GUIDE.md`
+
+1. **Before Adding Any Hero Panorama:**
+   - Review panorama asset requirements in `/docs/PANORAMA-ASSET-REQUIREMENTS.md`
+   - Ensure progressive JPEG encoding (iOS Safari requirement)
+   - Target < 600KB file size, 4096x2048 resolution
+   - Verify 2:1 aspect ratio (equirectangular projection)
+
+2. **Required Hero Space Structure:**
+```typescript
+{
+  id: number,                    // Unique ID
+  name: string,                 // Display name
+  creator: string,              // Creator attribution
+  category: string,             // Category (Social, Art, Gaming, etc.)
+  description: string,          // Rich description
+  userCount: number,           // Visitor count
+  image: "/panorama-file.jpg", // Path to 360° image
+  tags: ["Live", "360°", "..."], // Must include "360°"
+  isRealSpace: true,           // CRITICAL: Must be true
+  liveUrl?: string             // Optional live space URL
+}
+```
+
+3. **Update Detection Logic:** Add new panorama to conditional in `hero-carousel.tsx`:
+```typescript
+{space.isRealSpace && (
+  space.image === "/room1-360.jpg" || 
+  space.image === "/white-room.jpg" ||
+  space.image === "/your-new-panorama.jpg"  // ADD HERE
+) ? (
+  <OptimizedPanoramaViewer ... />
+```
+
+#### **Adding New Space Card Panoramas**
+**CRITICAL**: Always follow `/docs/SPACE-CARD-PANORAMA-IMPLEMENTATION-GUIDE.md`
+
+1. **Required Space Card Structure:**
+```typescript
+{
+  id: number,
+  name: string,
+  creator: string,
+  category: string,
+  visitors: number,
+  rating: number,
+  image: "/thumbnails/static-thumb.jpg",    // Static thumbnail
+  image360: "/panoramas/360-view.jpg",      // 360° panorama
+  isRealSpace: true,                        // CRITICAL: Enables panorama
+  liveUrl?: string
+}
+```
+
+2. **Use Optimized Component:**
+```typescript
+<InteractiveSpaceCardOptimized
+  id={space.id}
+  name={space.name}
+  // ... other props
+  image360={space.image360}      // 360° panorama URL
+  thumbnail={space.image}        // Static preview
+  isRealSpace={space.isRealSpace} // Must be true
+/>
+```
+
+#### **Performance & WebGL Context Management**
+**CRITICAL**: WebGL context limits MUST be respected to prevent crashes
+
+1. **Context Limits:**
+   - **Desktop**: Maximum 6 concurrent panorama viewers
+   - **Mobile**: Maximum 4 concurrent panorama viewers  
+   - **iOS Safari**: Maximum 3 concurrent (most restrictive)
+
+2. **Resource Cleanup:** Always ensure proper cleanup in components
+3. **Lazy Loading:** Space cards use lazy loading, heroes load immediately
+4. **Error Handling:** Implement fallback to static images for failed panoramas
+
+#### **Troubleshooting Checklist**
+When panoramas don't work, check `/docs/PANORAMA-TROUBLESHOOTING-GUIDE.md`:
+
+1. **"Too many WebGL contexts" error** - Most common issue
+2. **Panorama not loading** - Check image paths and `isRealSpace: true`
+3. **Poor performance** - Verify image compression and concurrent viewer limits
+4. **Mobile issues** - iOS Safari requires progressive JPEG encoding
+
+#### **Asset Requirements Summary**
+From `/docs/PANORAMA-ASSET-REQUIREMENTS.md`:
+- **Format**: Progressive JPEG (MANDATORY for iOS)
+- **Resolution**: 4096x2048 (desktop), 2048x1024 (mobile)
+- **File Size**: Heroes < 600KB, Space Cards < 400KB
+- **Aspect Ratio**: Exactly 2:1 (equirectangular)
+- **Color Space**: sRGB
+
+### **Integration Points**
+- **Hero Carousel**: `/components/hero-carousel/hero-carousel.tsx`
+- **Space Grid**: `/components/space-grid/enhanced-category-row.tsx`
+- **Demo Page**: `/app/demo-optimized-panorama/page.tsx`
+- **Optimized Viewer**: `/components/panorama-viewer-optimized.tsx`
+
+### **Testing Requirements**
+1. **Build Test**: `npm run build` must succeed
+2. **Performance**: No "too many WebGL contexts" errors
+3. **Mobile**: Test on iOS Safari (most restrictive)
+4. **Demo Page**: Verify `/demo-optimized-panorama` works properly
