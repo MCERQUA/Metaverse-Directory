@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Play, Users } from "lucide-react"
+import dynamic from "next/dynamic"
+
+const PanoramaViewer = dynamic(() => import("@/components/panorama-viewer"), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-gray-900 animate-pulse" />
+})
 
 interface FeaturedSpace {
   id: number
@@ -119,11 +125,28 @@ export function HeroCarousel() {
         {featuredSpaces.map((space, index) => (
           <div
             key={space.id}
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
-            style={{ backgroundImage: space?.image ? `url(${space.image})` : 'none' }}
-          />
+          >
+            {space.isRealSpace && space.image === "/room1-360.jpg" ? (
+              <PanoramaViewer
+                id={`hero-panorama-${space.id}`}
+                imageUrl={space.image}
+                autoRotate={-2}
+                showControls={false}
+                initialPitch={10}
+                initialYaw={180}
+                height="100%"
+                className="absolute inset-0"
+              />
+            ) : (
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: space?.image ? `url(${space.image})` : 'none' }}
+              />
+            )}
+          </div>
         ))}
       </div>
 

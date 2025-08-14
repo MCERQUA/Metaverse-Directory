@@ -5,7 +5,12 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, Users, ExternalLink, Move3D, X } from "lucide-react"
-import { CSSPanoramaViewer } from "@/components/three/css-panorama-viewer"
+import dynamic from "next/dynamic"
+
+const PanoramaViewer = dynamic(() => import("@/components/panorama-viewer"), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-gray-900 animate-pulse" />
+})
 
 interface InteractiveSpaceCardProps {
   id: number
@@ -45,7 +50,16 @@ export function InteractiveSpaceCard({
       {/* 360 Preview Overlay */}
       {isPreviewMode && (
         <div className="absolute inset-0 z-20 bg-black">
-          <CSSPanoramaViewer imageUrl={image360} className="absolute inset-0" autoRotate={false} />
+          <PanoramaViewer
+            id={`card-panorama-${id}`}
+            imageUrl={image360}
+            autoRotate={-1}
+            showControls={true}
+            initialPitch={0}
+            initialYaw={180}
+            height="100%"
+            className="absolute inset-0"
+          />
           
           <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-30">
             <div className="bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
