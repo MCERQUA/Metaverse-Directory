@@ -2,12 +2,31 @@
 
 import { useState } from "react"
 import { CategoryRow } from "./category-row"
+import { EnhancedCategoryRow } from "./enhanced-category-row"
 import { GridSkeleton } from "./grid-skeleton"
 import { CategoryFilter } from "./category-filter"
+
+// Real spaces data
+const realSpaces = [
+  {
+    id: 1001,
+    name: "Neon Lounge VR",
+    creator: "MetaVerse Studios",
+    category: "Social",
+    visitors: 15234,
+    rating: 4.9,
+    image: "/room1-360.jpg",
+    image360: "/room1-360.jpg",
+    liveUrl: "https://3d-mc.netlify.app/",
+    featured: true,
+    isRealSpace: true,
+  },
+]
 
 // Mock data for different categories
 const mockSpaces = {
   trending: [
+    ...realSpaces,
     {
       id: 1,
       name: "Cyber Arena",
@@ -132,6 +151,7 @@ const mockSpaces = {
     },
   ],
   popular: [
+    ...realSpaces,
     {
       id: 13,
       name: "Dragon's Lair",
@@ -268,14 +288,14 @@ export function SpaceGrid() {
 
       {selectedCategory === "All" ? (
         <>
-          <CategoryRow title="Trending Now" spaces={mockSpaces.trending} priority />
+          <EnhancedCategoryRow title="Trending Now" spaces={mockSpaces.trending} priority />
           <CategoryRow title="Staff Picks" spaces={mockSpaces.staffPicks} />
           <CategoryRow title="New Arrivals" spaces={mockSpaces.newArrivals} />
-          <CategoryRow title="Most Popular" spaces={mockSpaces.popular} />
+          <EnhancedCategoryRow title="Most Popular" spaces={mockSpaces.popular} />
         </>
       ) : (
         <>
-          <CategoryRow title={`Trending ${selectedCategory}`} spaces={filterSpacesByCategory(mockSpaces.trending)} />
+          <EnhancedCategoryRow title={`Trending ${selectedCategory}`} spaces={filterSpacesByCategory(mockSpaces.trending)} />
           <CategoryRow
             title={`New ${selectedCategory} Spaces`}
             spaces={filterSpacesByCategory(mockSpaces.newArrivals)}

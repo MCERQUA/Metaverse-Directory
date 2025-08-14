@@ -7,6 +7,19 @@ import { Play, Users } from "lucide-react"
 // Mock data for featured spaces
 const featuredSpaces = [
   {
+    id: 1001,
+    name: "Neon Lounge VR",
+    creator: "MetaVerse Studios",
+    category: "Social",
+    description:
+      "Step into a stunning 360° virtual lounge with ambient lighting, interactive elements, and immersive social experiences. Explore and connect in this live 3D space.",
+    userCount: 15234,
+    image: "/room1-360.jpg",
+    tags: ["Live", "360°", "Social"],
+    isRealSpace: true,
+    liveUrl: "https://3d-mc.netlify.app/",
+  },
+  {
     id: 1,
     name: "Neon City Racing",
     creator: "CyberDev Studios",
@@ -101,6 +114,11 @@ export function HeroCarousel() {
       <div className="relative z-10 container mx-auto px-6 h-full flex items-end pb-8">
         <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-4">
+            {currentSpace.isRealSpace && (
+              <span className="px-3 py-1 bg-green-600/30 text-green-400 text-sm rounded-full border border-green-500/50 animate-pulse">
+                LIVE
+              </span>
+            )}
             <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full border border-primary/30">
               {currentSpace.category}
             </span>
@@ -115,13 +133,26 @@ export function HeroCarousel() {
           <p className="text-lg text-gray-200 mb-8 leading-relaxed max-w-xl">{currentSpace.description}</p>
 
           <div className="flex items-center gap-4">
-            <Button
-              size="lg"
-              className="gap-2 bg-white/90 text-black hover:bg-white/80 text-lg px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Play className="h-5 w-5" />
-              Enter Space
-            </Button>
+            {currentSpace.isRealSpace && currentSpace.liveUrl ? (
+              <Button
+                asChild
+                size="lg"
+                className="gap-2 bg-white/90 text-black hover:bg-white/80 text-lg px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <a href={currentSpace.liveUrl} target="_blank" rel="noopener noreferrer">
+                  <Play className="h-5 w-5" />
+                  Enter Space
+                </a>
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="gap-2 bg-white/90 text-black hover:bg-white/80 text-lg px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Play className="h-5 w-5" />
+                Enter Space
+              </Button>
+            )}
           </div>
         </div>
       </div>

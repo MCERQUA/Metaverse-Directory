@@ -46,10 +46,10 @@ export function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-950 to-black">
       <Header />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-20 pb-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Welcome back, {user?.username}!</h1>
           <p className="text-slate-400">Manage your virtual spaces and track your community engagement</p>
@@ -57,36 +57,36 @@ export function UserDashboard() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-400">Total Spaces</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">Total Spaces</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.totalSpaces}</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-400">Total Views</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">Total Views</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.totalViews.toLocaleString()}</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-400">Total Likes</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">Total Likes</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.totalLikes}</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700">
+          <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-slate-400">Published</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">Published</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-white">{stats.publishedSpaces}</div>
@@ -96,14 +96,14 @@ export function UserDashboard() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-slate-800/50 border-slate-700">
-            <TabsTrigger value="spaces" className="data-[state=active]:bg-slate-700">
+          <TabsList className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
+            <TabsTrigger value="spaces" className="data-[state=active]:bg-gray-700/50">
               My Spaces
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-slate-700">
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-gray-700/50">
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-slate-700">
+            <TabsTrigger value="settings" className="data-[state=active]:bg-gray-700/50">
               Settings
             </TabsTrigger>
           </TabsList>
@@ -113,7 +113,7 @@ export function UserDashboard() {
               <h2 className="text-xl font-semibold text-white">Your Virtual Spaces</h2>
               <Button
                 asChild
-                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all"
               >
                 <Link href="/submit">
                   <Plus className="mr-2 h-4 w-4" />
@@ -123,16 +123,16 @@ export function UserDashboard() {
             </div>
 
             {userSpaces.length === 0 ? (
-              <Card className="bg-slate-800/50 border-slate-700">
+              <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
                 <CardContent className="text-center py-12">
-                  <div className="text-slate-400 mb-4">
+                  <div className="text-gray-400 mb-4">
                     <Plus className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p className="text-lg mb-2">No spaces yet</p>
                     <p className="text-sm">Create your first virtual space to get started</p>
                   </div>
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
+                    className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm transition-all"
                   >
                     <Link href="/submit">Create Your First Space</Link>
                   </Button>
@@ -141,7 +141,7 @@ export function UserDashboard() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {userSpaces.map((space) => (
-                  <Card key={space.id} className="bg-slate-800/50 border-slate-700 overflow-hidden">
+                  <Card key={space.id} className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm overflow-hidden">
                     <div className="aspect-video relative">
                       <img
                         src={space.thumbnail || "/placeholder.svg"}
@@ -194,7 +194,7 @@ export function UserDashboard() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                          className="flex-1 border-gray-600/50 text-gray-300 hover:bg-gray-700/50 bg-transparent transition-all"
                         >
                           Edit
                         </Button>
@@ -202,7 +202,7 @@ export function UserDashboard() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                            className="border-gray-600/50 text-gray-300 hover:bg-gray-700/50 bg-transparent transition-all"
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>
@@ -216,15 +216,15 @@ export function UserDashboard() {
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
-            <Card className="bg-slate-800/50 border-slate-700">
+            <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-white">Analytics Dashboard</CardTitle>
-                <CardDescription className="text-slate-400">
+                <CardDescription className="text-gray-400">
                   Track your spaces' performance and engagement
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-gray-400">
                   <div className="text-lg mb-2">Analytics Coming Soon</div>
                   <p className="text-sm">Detailed analytics and insights will be available here</p>
                 </div>
@@ -233,15 +233,15 @@ export function UserDashboard() {
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-6">
-            <Card className="bg-slate-800/50 border-slate-700">
+            <Card className="bg-gray-800/30 border-gray-700/50 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-white">Account Settings</CardTitle>
-                <CardDescription className="text-slate-400">
+                <CardDescription className="text-gray-400">
                   Manage your account preferences and profile
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-gray-400">
                   <div className="text-lg mb-2">Settings Panel Coming Soon</div>
                   <p className="text-sm">Account management features will be available here</p>
                 </div>
