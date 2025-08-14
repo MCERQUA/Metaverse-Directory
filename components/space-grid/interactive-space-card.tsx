@@ -39,6 +39,14 @@ export function InteractiveSpaceCard({
   isRealSpace = false,
 }: InteractiveSpaceCardProps) {
 
+  console.log(`InteractiveSpaceCard for ${name}:`, {
+    id,
+    isRealSpace,
+    image360,
+    thumbnail,
+    shouldShow360: isRealSpace && image360
+  });
+
   return (
     <Card className="relative overflow-hidden bg-gray-900/50 border-gray-700 hover:border-gray-600 transition-all group">
       {/* Main Card Content */}

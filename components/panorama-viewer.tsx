@@ -28,6 +28,8 @@ export default function PanoramaViewer({
   const viewerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  console.log(`PanoramaViewer ${id} created with:`, { imageUrl, isScriptLoaded });
+
   useEffect(() => {
     if (!isScriptLoaded || !containerRef.current) return;
 
@@ -44,6 +46,7 @@ export default function PanoramaViewer({
     const timer = setTimeout(() => {
       // Initialize Pannellum viewer
       const pannellum = (window as any).pannellum;
+      console.log(`Initializing pannellum for ${id}:`, { pannellum: !!pannellum, container: !!containerRef.current });
       if (pannellum && containerRef.current) {
         viewerRef.current = pannellum.viewer(id, {
         type: 'equirectangular',
