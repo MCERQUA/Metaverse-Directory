@@ -18,9 +18,9 @@ interface InteractiveSpaceCardProps {
   category: string
   visitors: number
   rating: number
-  image360: string
+  image360?: string | null
   thumbnail: string
-  liveUrl: string
+  liveUrl?: string
   featured?: boolean
   isRealSpace?: boolean
 }
@@ -38,22 +38,13 @@ export function InteractiveSpaceCard({
   featured,
   isRealSpace = false,
 }: InteractiveSpaceCardProps) {
-
-  console.log(`InteractiveSpaceCard for ${name}:`, {
-    id,
-    isRealSpace,
-    image360,
-    thumbnail,
-    shouldShow360: isRealSpace && image360
-  });
-
   return (
     <Card className="relative overflow-hidden bg-gray-900/50 border-gray-700 hover:border-gray-600 transition-all group">
       {/* Main Card Content */}
       <div className="aspect-video relative">
-        {isRealSpace && image360 ? (
+        {image360 ? (
           <PanoramaViewer
-            id={`card-panorama-${id}`}
+            id={`card-panorama-${name.replace(/[^a-zA-Z0-9]/g, '-')}-${id}`}
             imageUrl={image360}
             autoRotate={-2}
             showControls={false}
