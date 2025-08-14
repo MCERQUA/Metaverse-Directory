@@ -60,7 +60,7 @@ export function InteractiveSpaceCard({
             alt={name}
             className="w-full h-full object-cover"
           />
-        )
+        )}
         
         {/* Live Badge for Real Spaces */}
         {isRealSpace && (
