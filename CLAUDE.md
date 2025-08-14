@@ -127,3 +127,4 @@ Using shadcn/ui components with Radix UI primitives:
 - Pre-configured in `components.json`
 - Lucide React for icons
 - Components stored in `@/components/ui`
+- claude code is running on a virtual server you can test local deployments but the user cannot "view" them as their is no "Localhost" only use local deploy for debuging and not visual testing
