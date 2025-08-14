@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Play, Users } from "lucide-react"
 import dynamic from "next/dynamic"
 
-const PanoramaViewer = dynamic(() => import("@/components/panorama-viewer"), {
+const OptimizedPanoramaViewer = dynamic(() => import("@/components/panorama-viewer-optimized"), {
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-gray-900 animate-pulse" />
 })
@@ -143,15 +143,14 @@ export function HeroCarousel() {
             }`}
           >
             {space.isRealSpace && (space.image === "/room1-360.jpg" || space.image === "/white-room.jpg") ? (
-              <PanoramaViewer
+              <OptimizedPanoramaViewer
                 id={`hero-panorama-${space.id}`}
                 imageUrl={space.image}
+                placeholder={space.image}
                 autoRotate={-2}
                 showControls={false}
-                initialPitch={10}
-                initialYaw={180}
+                lazy={false}
                 height="100%"
-                className="absolute inset-0"
               />
             ) : (
               <div
