@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Star, Users, ExternalLink, Move3D, X } from "lucide-react"
-import Link from "next/link"
+import { Sphere360Viewer } from "@/components/three/sphere-360-viewer"
 
 interface InteractiveSpaceCardProps {
   id: number
@@ -35,65 +35,9 @@ export function InteractiveSpaceCard({
   isRealSpace = false,
 }: InteractiveSpaceCardProps) {
   const [isPreviewMode, setIsPreviewMode] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollLeft, setScrollLeft] = useState(0)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!isPreviewMode) return
-    setIsDragging(true)
-    setStartX(e.clientX)
-    setScrollLeft(scrollLeft)
-  }
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !isPreviewMode) return
-    e.preventDefault()
-    const x = e.clientX
-    const walk = (x - startX) * 2
-    const newScrollLeft = scrollLeft - walk
-    setScrollLeft(newScrollLeft)
-    if (containerRef.current) {
-      containerRef.current.style.backgroundPosition = `${newScrollLeft}px center`
-    }
-  }
-
-  const handleMouseUp = () => {
-    setIsDragging(false)
-  }
-
-  const handleMouseLeave = () => {
-    setIsDragging(false)
-  }
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!isPreviewMode) return
-    setIsDragging(true)
-    setStartX(e.touches[0].clientX)
-    setScrollLeft(scrollLeft)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !isPreviewMode) return
-    const x = e.touches[0].clientX
-    const walk = (x - startX) * 2
-    const newScrollLeft = scrollLeft - walk
-    setScrollLeft(newScrollLeft)
-    if (containerRef.current) {
-      containerRef.current.style.backgroundPosition = `${newScrollLeft}px center`
-    }
-  }
-
-  const handleTouchEnd = () => {
-    setIsDragging(false)
-  }
 
   const togglePreview = () => {
     setIsPreviewMode(!isPreviewMode)
-    if (!isPreviewMode) {
-      setScrollLeft(0)
-    }
   }
 
   return (
@@ -101,47 +45,32 @@ export function InteractiveSpaceCard({
       {/* 360 Preview Overlay */}
       {isPreviewMode && (
         <div className="absolute inset-0 z-20 bg-black">
-          <div
-            ref={containerRef}
-            className="absolute inset-0 cursor-move"
-            style={{
-              backgroundImage: `url(${image360})`,
-              backgroundSize: "auto 100%",
-              backgroundRepeat: "repeat-x",
-              backgroundPosition: `${scrollLeft}px center`,
-            }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseLeave}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
-              <div className="bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
-                <p className="text-white text-sm font-medium">360° Preview</p>
-                <p className="text-gray-300 text-xs">Drag to look around</p>
-              </div>
-              <Button
-                onClick={togglePreview}
-                size="sm"
-                className="pointer-events-auto bg-black/70 hover:bg-black/90 text-white border-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+          <Sphere360Viewer imageUrl={image360} className="absolute inset-0" />
+          
+          <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-30">
+            <div className="bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
+              <p className="text-white text-sm font-medium">360° Interactive View</p>
+              <p className="text-gray-300 text-xs">Click and drag to look around</p>
             </div>
-            <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
-              <Button
-                asChild
-                className="pointer-events-auto w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
-              >
-                <a href={liveUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Enter Space
-                </a>
-              </Button>
-            </div>
+            <Button
+              onClick={togglePreview}
+              size="sm"
+              className="pointer-events-auto bg-black/70 hover:bg-black/90 text-white border-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="absolute bottom-4 left-4 right-4 pointer-events-none z-30">
+            <Button
+              asChild
+              className="pointer-events-auto w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+            >
+              <a href={liveUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Enter Space
+              </a>
+            </Button>
           </div>
         </div>
       )}
