@@ -27,7 +27,7 @@ interface FeaturedSpace {
 const featuredSpaces: FeaturedSpace[] = [
   {
     id: 1001,
-    name: "Neon Lounge VR",
+    name: "Mikes Room",
     creator: "MetaVerse Studios",
     category: "Social",
     description:

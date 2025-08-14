@@ -10,7 +10,7 @@ import { CategoryFilter } from "./category-filter"
 const realSpaces = [
   {
     id: 1001,
-    name: "Neon Lounge VR",
+    name: "Mikes Room",
     creator: "MetaVerse Studios",
     category: "Social",
     visitors: 15234,

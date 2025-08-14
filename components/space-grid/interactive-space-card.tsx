@@ -1,10 +1,8 @@
 "use client"
-
-import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Star, Users, ExternalLink, Move3D, X } from "lucide-react"
+import { Star, Users, ExternalLink } from "lucide-react"
 import dynamic from "next/dynamic"
 
 const PanoramaViewer = dynamic(() => import("@/components/panorama-viewer"), {
@@ -39,63 +37,29 @@ export function InteractiveSpaceCard({
   featured,
   isRealSpace = false,
 }: InteractiveSpaceCardProps) {
-  const [isPreviewMode, setIsPreviewMode] = useState(false)
-
-  const togglePreview = () => {
-    setIsPreviewMode(!isPreviewMode)
-  }
 
   return (
     <Card className="relative overflow-hidden bg-gray-900/50 border-gray-700 hover:border-gray-600 transition-all group">
-      {/* 360 Preview Overlay */}
-      {isPreviewMode && (
-        <div className="absolute inset-0 z-20 bg-black">
+      {/* Main Card Content */}
+      <div className="aspect-video relative">
+        {isRealSpace && image360 === "/room1-360.jpg" ? (
           <PanoramaViewer
             id={`card-panorama-${id}`}
             imageUrl={image360}
-            autoRotate={-1}
-            showControls={true}
+            autoRotate={-2}
+            showControls={false}
             initialPitch={0}
             initialYaw={180}
             height="100%"
             className="absolute inset-0"
           />
-          
-          <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-30">
-            <div className="bg-black/70 backdrop-blur-sm rounded-lg px-3 py-2">
-              <p className="text-white text-sm font-medium">360° Interactive View</p>
-              <p className="text-gray-300 text-xs">Click and drag to look around</p>
-            </div>
-            <Button
-              onClick={togglePreview}
-              size="sm"
-              className="pointer-events-auto bg-black/70 hover:bg-black/90 text-white border-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <div className="absolute bottom-4 left-4 right-4 pointer-events-none z-30">
-            <Button
-              asChild
-              className="pointer-events-auto w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
-            >
-              <a href={liveUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Enter Space
-              </a>
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Main Card Content */}
-      <div className="aspect-video relative">
-        <img
-          src={thumbnail}
-          alt={name}
-          className="w-full h-full object-cover"
-        />
+        ) : (
+          <img
+            src={thumbnail}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        )
         
         {/* Live Badge for Real Spaces */}
         {isRealSpace && (
@@ -114,16 +78,6 @@ export function InteractiveSpaceCard({
             </Badge>
           </div>
         )}
-
-        {/* 360 Preview Button */}
-        <Button
-          onClick={togglePreview}
-          className="absolute bottom-2 right-2 bg-black/70 hover:bg-black/90 text-white border-0 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
-          size="sm"
-        >
-          <Move3D className="mr-1 h-3 w-3" />
-          360° View
-        </Button>
       </div>
 
       <div className="p-4">
