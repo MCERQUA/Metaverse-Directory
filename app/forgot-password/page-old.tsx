@@ -8,9 +8,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ArrowLeft, Mail } from "lucide-react"
-import { submitNetlifyForm } from "@/lib/netlify-forms"
 
-export default function ForgotPasswordPageNetlify() {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -21,22 +20,11 @@ export default function ForgotPasswordPageNetlify() {
     setError("")
     setIsLoading(true)
 
-    try {
-      await submitNetlifyForm({
-        formName: "forgot-password",
-        data: { email },
-        onSuccess: () => {
-          setIsSubmitted(true)
-        },
-        onError: (error) => {
-          setError("Failed to submit request. Please try again.")
-        }
-      })
-    } catch (err) {
-      setError("An error occurred. Please try again.")
-    } finally {
+    // Simulate API call
+    setTimeout(() => {
       setIsLoading(false)
-    }
+      setIsSubmitted(true)
+    }, 1500)
   }
 
   return (
@@ -58,10 +46,7 @@ export default function ForgotPasswordPageNetlify() {
                       Enter your email address and we'll send you a link to reset your password
                     </CardDescription>
                   </CardHeader>
-                  <form onSubmit={handleSubmit} data-netlify="true" name="forgot-password">
-                    {/* Hidden field for Netlify Forms */}
-                    <input type="hidden" name="form-name" value="forgot-password" />
-                    
+                  <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
                       {error && (
                         <Alert variant="destructive">
@@ -75,7 +60,6 @@ export default function ForgotPasswordPageNetlify() {
                         </Label>
                         <Input
                           id="email"
-                          name="email"
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
@@ -123,12 +107,12 @@ export default function ForgotPasswordPageNetlify() {
                   <CardContent className="space-y-4">
                     <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg p-4">
                       <p className="text-slate-300 text-sm">
-                        We've received your password reset request for:
+                        We've sent password reset instructions to:
                       </p>
                       <p className="text-white font-medium mt-1">{email}</p>
                     </div>
                     <p className="text-slate-400 text-sm">
-                      Your request has been submitted. We'll review it and send you instructions if an account exists with this email.
+                      If you don't receive an email within 5 minutes, check your spam folder or try again.
                     </p>
                   </CardContent>
                   <CardFooter className="flex flex-col space-y-4">
