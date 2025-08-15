@@ -9,8 +9,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Output configuration for Netlify
-  output: 'standalone',
   // Disable X-Powered-By header for security
   poweredByHeader: false,
   // Enable React strict mode for better debugging

@@ -1,11 +1,11 @@
 # Netlify configuration for Metaverse Directory
 
 [build]
-  # Directory with the build output
-  publish = ".next"
+  # Directory with the build output (auto-detected by plugin)
+  # publish = ".next"
   
-  # Build command
-  command = "npm run build"
+  # Build command (using pnpm since that's what Netlify detected)
+  command = "pnpm run build"
   
   # Directory with the serverless functions
   functions = "netlify/functions"
@@ -72,6 +72,10 @@
 # Next.js ISR support
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[plugins.inputs]
+  # Disable Netlify Forms processing as we're not using them
+  disableNetlifyForms = true
 
 # Environment variables can be set in Netlify dashboard
 # or in .env.local for local development
