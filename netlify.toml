@@ -1,14 +1,8 @@
 # Netlify configuration for Metaverse Directory
 
 [build]
-  # Directory with the build output (auto-detected by plugin)
-  # publish = ".next"
-  
-  # Build command (using pnpm since that's what Netlify detected)
+  # Build command
   command = "pnpm run build"
-  
-  # Directory with the serverless functions
-  functions = "netlify/functions"
 
 [build.environment]
   # Node.js version for building
@@ -16,6 +10,10 @@
   
   # Next.js specific
   NEXT_TELEMETRY_DISABLED = "1"
+
+# Next.js plugin for Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 # Headers configuration
 [[headers]]
@@ -28,21 +26,11 @@
 
 # Cache control for static assets
 [[headers]]
-  for = "/static/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
   for = "/_next/static/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
 # Cache control for images
-[[headers]]
-  for = "/images/*"
-  [headers.values]
-    Cache-Control = "public, max-age=604800"
-
 [[headers]]
   for = "*.jpg"
   [headers.values]
@@ -62,20 +50,3 @@
   for = "*.webp"
   [headers.values]
     Cache-Control = "public, max-age=604800"
-
-# Redirects (if needed in the future)
-# [[redirects]]
-#   from = "/old-path"
-#   to = "/new-path"
-#   status = 301
-
-# Next.js ISR support
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-[plugins.inputs]
-  # Disable Netlify Forms processing as we're not using them
-  disableNetlifyForms = true
-
-# Environment variables can be set in Netlify dashboard
-# or in .env.local for local development
