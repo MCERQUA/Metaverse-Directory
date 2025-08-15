@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { LoginForm } from "@/components/auth/login-form"
+import { LoginFormNetlify } from "@/components/auth/login-form-netlify"
 
 export const metadata: Metadata = {
   title: "Login - MyRoom.Chat",
@@ -16,7 +16,7 @@ export default function LoginPage() {
               <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
               <p className="text-slate-400">Sign in to explore virtual worlds</p>
             </div>
-            <LoginForm />
+            <LoginFormNetlify />
           </div>
         </div>
       </div>

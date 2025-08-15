@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { SignupForm } from "@/components/auth/signup-form"
+import { SignupFormNetlify } from "@/components/auth/signup-form-netlify"
 
 export const metadata: Metadata = {
   title: "Sign Up - MetaVerse Discovery",
@@ -16,7 +16,7 @@ export default function SignupPage() {
               <h1 className="text-3xl font-bold text-white mb-2">Join MetaVerse</h1>
               <p className="text-slate-400">Create your account to start exploring</p>
             </div>
-            <SignupForm />
+            <SignupFormNetlify />
           </div>
         </div>
       </div>
