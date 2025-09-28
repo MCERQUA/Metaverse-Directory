@@ -27,10 +27,102 @@ const scriptLoadPromise = new Promise<void>((resolve) => {
   }
 });
 
-// Pool of viewer instances for reuse
-const viewerPool: any[] = [];
-const MAX_ACTIVE_VIEWERS = 6; // Limit concurrent active viewers
-const activeViewers = new Set<string>();
+// Global WebGL context manager to prevent exhaustion
+class WebGLContextManager {
+  private static instance: WebGLContextManager;
+  private activeViewers = new Map<string, any>();
+  private pendingCleanup = new Set<string>();
+  private maxViewers = 2; // Very conservative limit
+  private cleanupTimeout: NodeJS.Timeout | null = null;
+
+  static getInstance(): WebGLContextManager {
+    if (!WebGLContextManager.instance) {
+      WebGLContextManager.instance = new WebGLContextManager();
+    }
+    return WebGLContextManager.instance;
+  }
+
+  canCreateViewer(): boolean {
+    return this.activeViewers.size < this.maxViewers;
+  }
+
+  registerViewer(id: string, viewer: any): void {
+    // If at max capacity, force cleanup oldest
+    if (this.activeViewers.size >= this.maxViewers) {
+      const oldestId = Array.from(this.activeViewers.keys())[0];
+      this.forceCleanup(oldestId);
+    }
+    this.activeViewers.set(id, viewer);
+    this.pendingCleanup.delete(id);
+  }
+
+  scheduleCleanup(id: string, delay: number = 3000): void {
+    this.pendingCleanup.add(id);
+
+    if (this.cleanupTimeout) {
+      clearTimeout(this.cleanupTimeout);
+    }
+
+    this.cleanupTimeout = setTimeout(() => {
+      if (this.pendingCleanup.has(id)) {
+        this.forceCleanup(id);
+      }
+    }, delay);
+  }
+
+  cancelCleanup(id: string): void {
+    this.pendingCleanup.delete(id);
+  }
+
+  forceCleanup(id: string): void {
+    const viewer = this.activeViewers.get(id);
+    if (viewer) {
+      try {
+        // Destroy Pannellum viewer
+        if (typeof viewer.destroy === 'function') {
+          viewer.destroy();
+        }
+      } catch (e) {
+        console.warn(`Error destroying viewer ${id}:`, e);
+      }
+
+      // Force WebGL context cleanup
+      const container = document.getElementById(id);
+      if (container) {
+        const canvases = container.querySelectorAll('canvas');
+        canvases.forEach(canvas => {
+          const gl = (canvas as HTMLCanvasElement).getContext('webgl') ||
+                     (canvas as HTMLCanvasElement).getContext('experimental-webgl');
+          if (gl) {
+            const loseContext = gl.getExtension('WEBGL_lose_context');
+            if (loseContext) {
+              loseContext.loseContext();
+            }
+          }
+        });
+
+        // Clear container
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+      }
+
+      this.activeViewers.delete(id);
+      this.pendingCleanup.delete(id);
+    }
+  }
+
+  cleanupAll(): void {
+    const ids = Array.from(this.activeViewers.keys());
+    ids.forEach(id => this.forceCleanup(id));
+  }
+
+  getActiveCount(): number {
+    return this.activeViewers.size;
+  }
+}
+
+const contextManager = WebGLContextManager.getInstance();
 
 export default function OptimizedPanoramaViewer({
   imageUrl,
@@ -47,6 +139,7 @@ export default function OptimizedPanoramaViewer({
   const [isVisible, setIsVisible] = useState(!lazy);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
+  const [isQueued, setIsQueued] = useState(false);
   const viewerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -60,12 +153,10 @@ export default function OptimizedPanoramaViewer({
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
-            // Keep observing to handle going out of view
-          } else if (isInitialized) {
-            // Cleanup when out of view for memory management
-            handleCleanup();
-            setIsInitialized(false);
-            setShowPreview(true);
+          } else {
+            // When going out of view, mark as not visible but don't cleanup immediately
+            // This prevents destroying and recreating viewers when scrolling quickly
+            setIsVisible(false);
           }
         });
       },
@@ -80,26 +171,31 @@ export default function OptimizedPanoramaViewer({
     return () => {
       observerRef.current?.disconnect();
     };
-  }, [lazy, isInitialized]);
+  }, [lazy]);
 
   // Initialize panorama viewer when visible
   useEffect(() => {
-    if (!isVisible || isInitialized || !containerRef.current) return;
+    if (!containerRef.current) return;
 
     const initializeViewer = async () => {
+      // Only initialize if visible and not already initialized
+      if (!isVisible || isInitialized) return;
+
       // Wait for script to load
       await scriptLoadPromise;
 
-      // Check if we've hit the max active viewers limit
-      if (activeViewers.size >= MAX_ACTIVE_VIEWERS) {
-        // Find and cleanup the oldest viewer
-        const oldestId = Array.from(activeViewers)[0];
-        const oldestContainer = document.getElementById(oldestId);
-        if (oldestContainer) {
-          // Force cleanup of oldest viewer
-          cleanupViewer(oldestId);
-        }
+      // Check if we can create a new viewer
+      if (!contextManager.canCreateViewer()) {
+        setIsQueued(true);
+        // Wait and retry
+        setTimeout(() => {
+          if (isVisible && !isInitialized) {
+            initializeViewer();
+          }
+        }, 500);
+        return;
       }
+      setIsQueued(false);
 
       const pannellum = (window as any).pannellum;
       if (!pannellum || !containerRef.current) return;
@@ -132,9 +228,9 @@ export default function OptimizedPanoramaViewer({
 
         // Initialize viewer
         viewerRef.current = pannellum.viewer(id, config);
-        activeViewers.add(id);
+        contextManager.registerViewer(id, viewerRef.current);
         setIsInitialized(true);
-        
+
         // Hide preview after panorama loads
         setTimeout(() => setShowPreview(false), 500);
       } catch (error) {
@@ -142,36 +238,24 @@ export default function OptimizedPanoramaViewer({
       }
     };
 
-    initializeViewer();
+    // Handle visibility changes
+    if (isVisible && !isInitialized) {
+      contextManager.cancelCleanup(id);
+      initializeViewer();
+    } else if (!isVisible && isInitialized) {
+      // Schedule cleanup when out of view
+      contextManager.scheduleCleanup(id, 3000);
+      handleCleanup();
+      setIsInitialized(false);
+      setShowPreview(true);
+    }
   }, [isVisible, isInitialized, imageUrl, id, autoRotate, showControls, initialPitch, initialYaw, placeholder]);
 
-  const cleanupViewer = (viewerId: string) => {
-    const container = document.getElementById(viewerId);
-    if (container) {
-      // Find and destroy the viewer
-      const viewers = (window as any).pannellum?.viewer;
-      if (viewers) {
-        try {
-          // Pannellum doesn't expose a direct way to get viewer by ID
-          // so we need to manually trigger cleanup
-          const event = new Event('destroy');
-          container.dispatchEvent(event);
-        } catch (e) {
-          // Ignore cleanup errors
-        }
-      }
-      activeViewers.delete(viewerId);
-    }
-  };
+  // Removed - now handled by WebGLContextManager
 
   const handleCleanup = () => {
-    if (viewerRef.current) {
-      try {
-        viewerRef.current.destroy();
-        activeViewers.delete(id);
-      } catch (e) {
-        // Ignore errors during cleanup
-      }
+    if (viewerRef.current || contextManager.getActiveCount() > 0) {
+      contextManager.forceCleanup(id);
       viewerRef.current = null;
     }
   };
@@ -179,9 +263,9 @@ export default function OptimizedPanoramaViewer({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      handleCleanup();
+      contextManager.forceCleanup(id);
     };
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -217,7 +301,11 @@ export default function OptimizedPanoramaViewer({
             {/* Loading indicator */}
             {isVisible && !isInitialized && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                {isQueued ? (
+                  <div className="text-white text-sm bg-black/50 px-3 py-2 rounded">Waiting for resources...</div>
+                ) : (
+                  <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                )}
               </div>
             )}
           </div>
@@ -227,7 +315,11 @@ export default function OptimizedPanoramaViewer({
         <div
           id={id}
           className={`absolute inset-0 transition-opacity duration-500`}
-          style={{ opacity: isInitialized && !showPreview ? 1 : 0 }}
+          style={{
+            opacity: isInitialized && !showPreview ? 1 : 0,
+            pointerEvents: isInitialized ? 'auto' : 'none'
+          }}
+          data-panorama-viewer={id}
         />
       </div>
     </>
