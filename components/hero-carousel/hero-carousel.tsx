@@ -142,7 +142,8 @@ export function HeroCarousel() {
               index === currentSlide ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
           >
-            {space.isRealSpace && (space.image === "/room1-360.jpg" || space.image === "/white-room.jpg") ? (
+            {/* Only render panorama for current slide to conserve WebGL contexts */}
+            {index === currentSlide && space.isRealSpace && (space.image === "/room1-360.jpg" || space.image === "/white-room.jpg") ? (
               <OptimizedPanoramaViewer
                 id={`hero-panorama-${space.id}`}
                 imageUrl={space.image}

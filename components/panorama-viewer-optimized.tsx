@@ -32,7 +32,7 @@ class WebGLContextManager {
   private static instance: WebGLContextManager;
   private activeViewers = new Map<string, any>();
   private pendingCleanup = new Set<string>();
-  private maxViewers = 2; // Very conservative limit
+  private maxViewers = 1; // Only allow one viewer at a time to prevent any WebGL issues
   private cleanupTimeout: NodeJS.Timeout | null = null;
 
   static getInstance(): WebGLContextManager {
@@ -56,7 +56,7 @@ class WebGLContextManager {
     this.pendingCleanup.delete(id);
   }
 
-  scheduleCleanup(id: string, delay: number = 3000): void {
+  scheduleCleanup(id: string, delay: number = 500): void { // Reduced delay for faster cleanup
     this.pendingCleanup.add(id);
 
     if (this.cleanupTimeout) {
@@ -161,8 +161,8 @@ export default function OptimizedPanoramaViewer({
         });
       },
       {
-        rootMargin: '50px', // Start loading slightly before visible
-        threshold: 0.01
+        rootMargin: '0px', // Only load when actually visible
+        threshold: 0.1 // Need more of the element visible
       }
     );
 
@@ -192,7 +192,7 @@ export default function OptimizedPanoramaViewer({
           if (isVisible && !isInitialized) {
             initializeViewer();
           }
-        }, 500);
+        }, 1000); // Wait longer before retry
         return;
       }
       setIsQueued(false);
@@ -238,16 +238,16 @@ export default function OptimizedPanoramaViewer({
       }
     };
 
-    // Handle visibility changes
+    // Handle visibility changes with immediate cleanup
     if (isVisible && !isInitialized) {
       contextManager.cancelCleanup(id);
       initializeViewer();
     } else if (!isVisible && isInitialized) {
-      // Schedule cleanup when out of view
-      contextManager.scheduleCleanup(id, 3000);
-      handleCleanup();
+      // Immediate cleanup when out of view to free resources
+      contextManager.forceCleanup(id);
       setIsInitialized(false);
       setShowPreview(true);
+      viewerRef.current = null;
     }
   }, [isVisible, isInitialized, imageUrl, id, autoRotate, showControls, initialPitch, initialYaw, placeholder]);
 
