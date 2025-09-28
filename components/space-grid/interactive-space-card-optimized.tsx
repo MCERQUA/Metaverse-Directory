@@ -50,32 +50,40 @@ export function InteractiveSpaceCardOptimized({
     >
       {/* Main Card Content */}
       <div className="aspect-video relative">
-        {hasPanorama ? (
+        {/* Always show static thumbnail by default */}
+        <div
+          className={`absolute inset-0 bg-cover bg-center transition-all duration-300 ${
+            isHovered && hasPanorama ? 'opacity-0' : 'opacity-100'
+          } ${!isHovered ? 'scale-100' : 'scale-105'}`}
+          style={{ backgroundImage: thumbnail ? `url(${thumbnail})` : 'none' }}
+        />
+
+        {/* Only render panorama on hover if available */}
+        {hasPanorama && isHovered && (
           <>
             <OptimizedPanoramaViewer
               id={`card-panorama-${name.replace(/[^a-zA-Z0-9]/g, '-')}-${id}`}
               imageUrl={image360}
               placeholder={thumbnail}
-              autoRotate={isHovered ? -3 : -1} // Faster rotation on hover
+              autoRotate={-3} // Always animate when shown
               showControls={false}
               initialPitch={10}
               initialYaw={180}
               height="100%"
               className="absolute inset-0"
-              lazy={true} // Enable lazy loading
+              lazy={false} // Load immediately when hovering
             />
-            
-            {/* 360° Indicator */}
-            <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
-              <Eye className="h-3 w-3 text-white" />
-              <span className="text-[10px] text-white font-medium">360°</span>
-            </div>
           </>
-        ) : (
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-            style={{ backgroundImage: thumbnail ? `url(${thumbnail})` : 'none' }}
-          />
+        )}
+
+        {/* 360° Indicator - always visible for panorama-enabled cards */}
+        {hasPanorama && (
+          <div className={`absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 transition-all duration-300 ${
+            isHovered ? 'scale-110 bg-black/80' : 'scale-100'
+          }`}>
+            <Eye className="h-3 w-3 text-white" />
+            <span className="text-[10px] text-white font-medium">360°</span>
+          </div>
         )}
         
         {/* Gradient Overlay for better text readability */}
